@@ -133,7 +133,7 @@
                 <li class="nav-item">
                     <a href="#education" onclick="showSection('education')">
                         <i class="fas fa-graduation-cap"></i>
-                        <span data-translate="education">Education</span>
+                        <span data-translate="education">Advisory</span>
                     </a>
                 </li>
                 <li class="nav-item">
@@ -626,7 +626,7 @@
             <!-- Education Section -->
             <section id="education" class="content-section">
                 <div class="section-header">
-                    <h2 data-translate="education">Health Education</h2>
+                    <h2 data-translate="education">Health Advisory</h2>
                     <p data-translate="education_desc">Learn about water-borne diseases and prevention</p>
                 </div>
                 <div class="education-grid">
@@ -636,7 +636,7 @@
                         </div>
                         <h3 data-translate="hygiene_practices">Hygiene Practices</h3>
                         <p data-translate="hygiene_desc">Learn proper handwashing and personal hygiene</p>
-                        <button class="learn-btn" data-translate="learn_more">Learn More</button>
+                        <button class="learn-btn" onclick="openEducationModal('hygiene')" data-translate="learn_more">Learn More</button>
                     </div>
                     
                     <div class="education-card">
@@ -645,7 +645,7 @@
                         </div>
                         <h3 data-translate="water_purification">Water Purification</h3>
                         <p data-translate="water_purification_desc">Methods to purify water at home</p>
-                        <button class="learn-btn" data-translate="learn_more">Learn More</button>
+                        <button class="learn-btn" onclick="openEducationModal('water_purification')" data-translate="learn_more">Learn More</button>
                     </div>
                     
                     <div class="education-card">
@@ -654,7 +654,7 @@
                         </div>
                         <h3 data-translate="disease_prevention">Disease Prevention</h3>
                         <p data-translate="disease_prevention_desc">Prevent water-borne diseases</p>
-                        <button class="learn-btn" data-translate="learn_more">Learn More</button>
+                        <button class="learn-btn" onclick="openEducationModal('disease_prevention')" data-translate="learn_more">Learn More</button>
                     </div>
                     
                     <div class="education-card">
@@ -663,7 +663,7 @@
                         </div>
                         <h3 data-translate="first_aid">First Aid</h3>
                         <p data-translate="first_aid_desc">Emergency response for health issues</p>
-                        <button class="learn-btn" data-translate="learn_more">Learn More</button>
+                        <button class="learn-btn" onclick="openEducationModal('first_aid')" data-translate="learn_more">Learn More</button>
                     </div>
                 </div>
             </section>
@@ -1137,6 +1137,21 @@
                 </div>
             </section>
         </main>
+    </div>
+
+    <!-- Education Modal -->
+    <div id="educationModal" class="modal">
+        <div class="modal-content education-modal-content">
+            <div class="modal-header">
+                <h2 id="educationModalTitle">Educational Content</h2>
+                <span class="close" onclick="closeEducationModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="educationModalContent">
+                    <!-- Dynamic content will be loaded here -->
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>

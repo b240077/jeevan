@@ -406,6 +406,35 @@ function loadDashboard() {
     initializeChartControls();
 }
 
+function initializeHealthChart() {
+    // Check if Chart.js is loaded
+    if (typeof Chart === 'undefined') {
+        console.error('Chart.js is not loaded');
+        showFallbackChart();
+        return;
+    }
+    
+    const canvas = document.getElementById('healthChart');
+    if (!canvas) {
+        console.error('Canvas element not found');
+        return;
+    }
+    
+    // Destroy existing chart if it exists
+    if (healthChart) {
+        healthChart.destroy();
+    }
+    
+    const ctx = canvas.getContext('2d');
+    if (!ctx) {
+        console.error('Canvas context not available');
+        showFallbackChart();
+        return;
+    }
+    
+    updateHealthTrends();
+}
+
 function updateHealthTrends() {
     const canvas = document.getElementById('healthChart');
     if (!canvas) return;
@@ -2017,15 +2046,398 @@ function handleWindowResize() {
     if (window.innerWidth > 768) {
         // Reset mobile menu state on larger screens
         const sidebar = document.getElementById('sidebar');
-        const overlay = document.querySelector('.mobile-overlay');
-        const menuToggle = document.querySelector('.mobile-menu-toggle');
+        const mobileOverlay = document.querySelector('.mobile-overlay');
+        const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
         
-        sidebar.classList.remove('mobile-open');
-        overlay.classList.remove('active');
-        menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
+        if (sidebar) sidebar.classList.remove('mobile-open');
+        if (mobileOverlay) mobileOverlay.classList.remove('active');
+        if (mobileMenuToggle) mobileMenuToggle.innerHTML = '<i class="fas fa-bars"></i>';
         document.body.style.overflow = '';
         isMobileMenuOpen = false;
     }
+}
+
+// Education Modal Functions
+function initializeEducationModal() {
+    // Close modal when clicking outside
+    window.addEventListener('click', function(event) {
+        const modal = document.getElementById('educationModal');
+        if (event.target === modal) {
+            closeEducationModal();
+        }
+    });
+}
+
+function openEducationModal(category) {
+    const modal = document.getElementById('educationModal');
+    const title = document.getElementById('educationModalTitle');
+    const content = document.getElementById('educationModalContent');
+    
+    // Set title and content based on category
+    const educationData = getEducationContent(category);
+    title.textContent = educationData.title;
+    content.innerHTML = educationData.content;
+    
+    // Show modal
+    modal.style.display = 'block';
+    document.body.style.overflow = 'hidden';
+}
+
+function closeEducationModal() {
+    const modal = document.getElementById('educationModal');
+    modal.style.display = 'none';
+    document.body.style.overflow = '';
+}
+
+function getEducationContent(category) {
+    const content = {
+        hygiene: {
+            title: 'Hygiene Practices for Disease Prevention',
+            content: `
+                <div class="education-content">
+                    <div class="highlight-box">
+                        <h3>🧼 Why Hygiene Matters</h3>
+                        <p>Proper hygiene is your first line of defense against water-borne diseases. Simple practices can prevent 80% of infections!</p>
+                    </div>
+                    
+                    <h3>Essential Handwashing Steps</h3>
+                    <ol class="steps-list">
+                        <li><strong>Wet your hands</strong> with clean, running water (warm or cold), turn off the tap, and apply soap.</li>
+                        <li><strong>Lather your hands</strong> by rubbing them together with the soap. Lather the backs of your hands, between your fingers, and under your nails.</li>
+                        <li><strong>Scrub your hands</strong> for at least 20 seconds. Need a timer? Hum the "Happy Birthday" song from beginning to end twice.</li>
+                        <li><strong>Rinse your hands</strong> well under clean, running water.</li>
+                        <li><strong>Dry your hands</strong> using a clean towel or air dry them.</li>
+                    </ol>
+                    
+                    <div class="info-box">
+                        <h4>🕐 When to Wash Your Hands</h4>
+                        <ul>
+                            <li>Before, during, and after preparing food</li>
+                            <li>Before eating food</li>
+                            <li>Before and after caring for someone at home who is sick</li>
+                            <li>After using the toilet</li>
+                            <li>After blowing your nose, coughing, or sneezing</li>
+                            <li>After touching garbage</li>
+                            <li>After handling animals or animal waste</li>
+                        </ul>
+                    </div>
+                    
+                    <h3>Personal Hygiene Best Practices</h3>
+                    <ul>
+                        <li><strong>Daily bathing:</strong> Use clean water and soap to remove bacteria and dirt</li>
+                        <li><strong>Oral hygiene:</strong> Brush teeth twice daily with fluoride toothpaste</li>
+                        <li><strong>Clean clothes:</strong> Wear freshly washed clothes, especially undergarments</li>
+                        <li><strong>Nail care:</strong> Keep fingernails short and clean</li>
+                        <li><strong>Hair care:</strong> Wash hair regularly to prevent scalp infections</li>
+                    </ul>
+                    
+                    <div class="warning-box">
+                        <h4>⚠️ Common Hygiene Mistakes</h4>
+                        <ul>
+                            <li>Not washing hands long enough (less than 20 seconds)</li>
+                            <li>Using dirty towels to dry hands</li>
+                            <li>Touching face with unwashed hands</li>
+                            <li>Sharing personal items like toothbrushes or razors</li>
+                        </ul>
+                    </div>
+                </div>
+            `
+        },
+        water_purification: {
+            title: 'Water Purification Methods',
+            content: `
+                <div class="education-content">
+                    <div class="highlight-box">
+                        <h3>💧 Safe Water Saves Lives</h3>
+                        <p>Clean water is essential for health. Learn multiple methods to purify water at home and protect your family from water-borne diseases.</p>
+                    </div>
+                    
+                    <h3>Boiling Method (Most Effective)</h3>
+                    <ol class="steps-list">
+                        <li><strong>Collect water</strong> from the cleanest available source</li>
+                        <li><strong>Filter</strong> through clean cloth to remove visible particles</li>
+                        <li><strong>Bring to rolling boil</strong> for at least 1 minute (3 minutes at high altitude)</li>
+                        <li><strong>Cool and store</strong> in clean, covered containers</li>
+                    </ol>
+                    
+                    <h3>Chemical Disinfection</h3>
+                    <h4>Chlorine Tablets/Drops</h4>
+                    <ul>
+                        <li>Add 2 drops of liquid chlorine bleach per liter of water</li>
+                        <li>Mix well and let stand for 30 minutes</li>
+                        <li>Water should have slight chlorine odor</li>
+                    </ul>
+                    
+                    <h4>Iodine Treatment</h4>
+                    <ul>
+                        <li>Add 5 drops of 2% iodine per liter of clear water</li>
+                        <li>10 drops for cloudy water</li>
+                        <li>Wait 30 minutes before drinking</li>
+                    </ul>
+                    
+                    <div class="info-box">
+                        <h4>🔬 UV Purification (SODIS Method)</h4>
+                        <p>Fill clear plastic bottles with water, lay horizontally in direct sunlight for 6 hours (2 days if cloudy). UV rays kill harmful microorganisms.</p>
+                    </div>
+                    
+                    <h3>Filtration Methods</h3>
+                    <ul>
+                        <li><strong>Sand Filter:</strong> Layer sand, gravel, and charcoal in container</li>
+                        <li><strong>Ceramic Filters:</strong> Remove bacteria and parasites</li>
+                        <li><strong>Activated Carbon:</strong> Removes chemicals and improves taste</li>
+                        <li><strong>Cloth Filtration:</strong> Use clean cotton cloth folded 4 times</li>
+                    </ul>
+                    
+                    <div class="warning-box">
+                        <h4>⚠️ Important Safety Notes</h4>
+                        <ul>
+                            <li>Always use the cleanest water source available</li>
+                            <li>Combine methods for maximum safety (filter + boil)</li>
+                            <li>Store treated water in clean, covered containers</li>
+                            <li>Don't mix treated and untreated water</li>
+                        </ul>
+                    </div>
+                    
+                    <h3>Emergency Water Sources</h3>
+                    <ul>
+                        <li>Rainwater (collect after first few minutes)</li>
+                        <li>Dew collection using clean cloth</li>
+                        <li>Ice and snow (melt and purify)</li>
+                        <li>Water from water heater tank</li>
+                    </ul>
+                </div>
+            `
+        },
+        disease_prevention: {
+            title: 'Water-borne Disease Prevention',
+            content: `
+                <div class="education-content">
+                    <div class="highlight-box">
+                        <h3>🛡️ Prevention is Better Than Cure</h3>
+                        <p>Understanding and preventing water-borne diseases can save lives and reduce healthcare costs. Learn the key strategies to protect yourself and your community.</p>
+                    </div>
+                    
+                    <h3>Common Water-borne Diseases</h3>
+                    <div class="info-box">
+                        <h4>Bacterial Infections</h4>
+                        <ul>
+                            <li><strong>Cholera:</strong> Severe diarrhea, dehydration</li>
+                            <li><strong>Typhoid:</strong> High fever, headache, stomach pain</li>
+                            <li><strong>E. coli:</strong> Stomach cramps, diarrhea</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="info-box">
+                        <h4>Viral Infections</h4>
+                        <ul>
+                            <li><strong>Hepatitis A:</strong> Liver infection, jaundice</li>
+                            <li><strong>Rotavirus:</strong> Severe diarrhea in children</li>
+                            <li><strong>Norovirus:</strong> Vomiting, diarrhea</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="info-box">
+                        <h4>Parasitic Infections</h4>
+                        <ul>
+                            <li><strong>Giardia:</strong> Intestinal infection, bloating</li>
+                            <li><strong>Cryptosporidium:</strong> Watery diarrhea</li>
+                            <li><strong>Amoeba:</strong> Dysentery, liver abscess</li>
+                        </ul>
+                    </div>
+                    
+                    <h3>Prevention Strategies</h3>
+                    <ol class="steps-list">
+                        <li><strong>Safe Water Practices</strong>
+                            <ul>
+                                <li>Drink only boiled, bottled, or properly treated water</li>
+                                <li>Use safe water for brushing teeth</li>
+                                <li>Avoid ice unless made from safe water</li>
+                            </ul>
+                        </li>
+                        <li><strong>Food Safety</strong>
+                            <ul>
+                                <li>Eat hot, freshly cooked food</li>
+                                <li>Avoid raw vegetables and fruits you can't peel</li>
+                                <li>Don't eat street food from unreliable sources</li>
+                            </ul>
+                        </li>
+                        <li><strong>Sanitation</strong>
+                            <ul>
+                                <li>Use proper toilet facilities</li>
+                                <li>Dispose of waste properly</li>
+                                <li>Keep living areas clean</li>
+                            </ul>
+                        </li>
+                        <li><strong>Personal Hygiene</strong>
+                            <ul>
+                                <li>Wash hands frequently with soap</li>
+                                <li>Keep fingernails short and clean</li>
+                                <li>Avoid touching face with dirty hands</li>
+                            </ul>
+                        </li>
+                    </ol>
+                    
+                    <h3>Community Prevention</h3>
+                    <ul>
+                        <li><strong>Water source protection:</strong> Keep wells and water sources clean</li>
+                        <li><strong>Waste management:</strong> Proper sewage and garbage disposal</li>
+                        <li><strong>Education:</strong> Spread awareness about water safety</li>
+                        <li><strong>Vaccination:</strong> Get vaccinated against preventable diseases</li>
+                    </ul>
+                    
+                    <div class="warning-box">
+                        <h4>🚨 When to Seek Medical Help</h4>
+                        <ul>
+                            <li>Severe dehydration (dizziness, dry mouth, little/no urination)</li>
+                            <li>High fever (above 101°F/38.3°C)</li>
+                            <li>Blood in stool or vomit</li>
+                            <li>Persistent vomiting preventing fluid intake</li>
+                            <li>Signs of severe dehydration in children</li>
+                        </ul>
+                    </div>
+                    
+                    <h3>High-Risk Groups</h3>
+                    <ul>
+                        <li>Children under 5 years</li>
+                        <li>Pregnant women</li>
+                        <li>Elderly people</li>
+                        <li>People with compromised immune systems</li>
+                        <li>Travelers to high-risk areas</li>
+                    </ul>
+                </div>
+            `
+        },
+        first_aid: {
+            title: 'First Aid for Water-borne Illness',
+            content: `
+                <div class="education-content">
+                    <div class="highlight-box">
+                        <h3>🚑 Quick Response Saves Lives</h3>
+                        <p>Knowing basic first aid for water-borne illnesses can prevent complications and save lives while waiting for medical help.</p>
+                    </div>
+                    
+                    <h3>Recognizing Symptoms</h3>
+                    <div class="info-box">
+                        <h4>Early Warning Signs</h4>
+                        <ul>
+                            <li>Nausea and vomiting</li>
+                            <li>Diarrhea (watery or bloody)</li>
+                            <li>Stomach cramps and pain</li>
+                            <li>Fever and chills</li>
+                            <li>Headache and fatigue</li>
+                            <li>Loss of appetite</li>
+                        </ul>
+                    </div>
+                    
+                    <h3>Immediate First Aid Steps</h3>
+                    <ol class="steps-list">
+                        <li><strong>Assess the Situation</strong>
+                            <ul>
+                                <li>Check consciousness level</li>
+                                <li>Monitor breathing and pulse</li>
+                                <li>Look for signs of dehydration</li>
+                            </ul>
+                        </li>
+                        <li><strong>Prevent Dehydration</strong>
+                            <ul>
+                                <li>Give small, frequent sips of clean water</li>
+                                <li>Use oral rehydration solution (ORS)</li>
+                                <li>Avoid dairy products and caffeine</li>
+                            </ul>
+                        </li>
+                        <li><strong>Comfort Measures</strong>
+                            <ul>
+                                <li>Keep patient comfortable and warm</li>
+                                <li>Encourage rest</li>
+                                <li>Monitor temperature</li>
+                            </ul>
+                        </li>
+                        <li><strong>Seek Medical Help</strong>
+                            <ul>
+                                <li>Call emergency services if severe</li>
+                                <li>Contact healthcare provider</li>
+                                <li>Prepare for transport if needed</li>
+                            </ul>
+                        </li>
+                    </ol>
+                    
+                    <h3>Making Oral Rehydration Solution (ORS)</h3>
+                    <div class="info-box">
+                        <h4>🥤 Homemade ORS Recipe</h4>
+                        <p><strong>Mix in 1 liter of clean water:</strong></p>
+                        <ul>
+                            <li>6 teaspoons of sugar</li>
+                            <li>1/2 teaspoon of salt</li>
+                        </ul>
+                        <p><strong>Give:</strong> Small sips every 5-10 minutes</p>
+                    </div>
+                    
+                    <h3>Managing Specific Symptoms</h3>
+                    <h4>For Diarrhea:</h4>
+                    <ul>
+                        <li>Continue giving fluids</li>
+                        <li>BRAT diet: Bananas, Rice, Applesauce, Toast</li>
+                        <li>Avoid dairy and fatty foods</li>
+                        <li>Don't use anti-diarrheal medication without medical advice</li>
+                    </ul>
+                    
+                    <h4>For Vomiting:</h4>
+                    <ul>
+                        <li>Give small amounts of clear fluids</li>
+                        <li>Try ice chips or popsicles</li>
+                        <li>Wait 15-20 minutes between attempts</li>
+                        <li>Gradually increase amount if tolerated</li>
+                    </ul>
+                    
+                    <h4>For Fever:</h4>
+                    <ul>
+                        <li>Use cool, damp cloths on forehead</li>
+                        <li>Remove excess clothing</li>
+                        <li>Give paracetamol/acetaminophen if available</li>
+                        <li>Monitor temperature regularly</li>
+                    </ul>
+                    
+                    <div class="warning-box">
+                        <h4>🚨 Emergency Signs - Call 911/Emergency Services</h4>
+                        <ul>
+                            <li>Unconsciousness or severe confusion</li>
+                            <li>Difficulty breathing</li>
+                            <li>Severe dehydration (no urination for 12+ hours)</li>
+                            <li>High fever (104°F/40°C or higher)</li>
+                            <li>Severe abdominal pain</li>
+                            <li>Blood in vomit or stool</li>
+                            <li>Signs of shock (rapid pulse, cold skin, confusion)</li>
+                        </ul>
+                    </div>
+                    
+                    <h3>First Aid Kit Essentials</h3>
+                    <ul>
+                        <li>Oral rehydration salts (ORS packets)</li>
+                        <li>Thermometer</li>
+                        <li>Paracetamol/acetaminophen</li>
+                        <li>Clean water and containers</li>
+                        <li>Electrolyte solutions</li>
+                        <li>Clean towels and cloths</li>
+                        <li>Emergency contact numbers</li>
+                    </ul>
+                    
+                    <h3>Prevention During Outbreaks</h3>
+                    <ul>
+                        <li>Isolate affected individuals when possible</li>
+                        <li>Disinfect surfaces and objects</li>
+                        <li>Wash hands frequently</li>
+                        <li>Use separate bathroom facilities if available</li>
+                        <li>Report cases to local health authorities</li>
+                    </ul>
+                </div>
+            `
+        }
+    };
+    
+    return content[category] || {
+        title: 'Educational Content',
+        content: '<p>Content not available.</p>'
+    };
 }
 
 // Add touch event handlers for better mobile interaction
@@ -2071,22 +2483,26 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize dashboard
     showSection('dashboard');
     
-    // Initialize health chart
-    updateHealthTrends();
+    // Initialize health chart with proper timing
+    setTimeout(() => {
+        initializeHealthChart();
+    }, 100);
     
-    // Set up chart control buttons
-    const chartButtons = document.querySelectorAll('.chart-btn');
-    chartButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            // Remove active class from all buttons
-            chartButtons.forEach(btn => btn.classList.remove('active'));
-            // Add active class to clicked button
-            this.classList.add('active');
-            // Update chart view
-            const viewType = this.textContent.toLowerCase();
-            updateChartView(viewType);
+    // Set up chart control buttons with delay
+    setTimeout(() => {
+        const chartButtons = document.querySelectorAll('.chart-btn');
+        chartButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                // Remove active class from all buttons
+                chartButtons.forEach(btn => btn.classList.remove('active'));
+                // Add active class to clicked button
+                this.classList.add('active');
+                // Update chart view
+                const viewType = this.textContent.toLowerCase();
+                updateChartView(viewType);
+            });
         });
-    });
+    }, 200);
     
     // Set up form submission
     const symptomForm = document.getElementById('symptomForm');

@@ -3804,3 +3804,105 @@ background: rgba(245, 158, 11, 0.1);
 .admin-only:hover a {
     background: rgba(245, 158, 11, 0.2);
 }
+
+/* Education Modal Styles */
+.education-modal-content {
+    max-width: 800px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.education-modal-content .modal-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 20px;
+    border-radius: 10px 10px 0 0;
+}
+
+.education-modal-content .modal-body {
+    padding: 30px;
+    line-height: 1.6;
+}
+
+.education-content h3 {
+    color: #2c3e50;
+    margin-top: 25px;
+    margin-bottom: 15px;
+    font-size: 1.3em;
+    border-left: 4px solid #3498db;
+    padding-left: 15px;
+}
+
+.education-content h4 {
+    color: #34495e;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    font-size: 1.1em;
+}
+
+.education-content ul {
+    margin: 15px 0;
+    padding-left: 25px;
+}
+
+.education-content li {
+    margin-bottom: 8px;
+    color: #555;
+}
+
+.education-content .highlight-box {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+    margin: 20px 0;
+    box-shadow: 0 4px 15px rgba(240, 147, 251, 0.3);
+}
+
+.education-content .info-box {
+    background: #e8f4fd;
+    border-left: 4px solid #3498db;
+    padding: 15px;
+    margin: 15px 0;
+    border-radius: 5px;
+}
+
+.education-content .warning-box {
+    background: #fff3cd;
+    border-left: 4px solid #ffc107;
+    padding: 15px;
+    margin: 15px 0;
+    border-radius: 5px;
+}
+
+.education-content .steps-list {
+    counter-reset: step-counter;
+    list-style: none;
+    padding-left: 0;
+}
+
+.education-content .steps-list li {
+    counter-increment: step-counter;
+    margin-bottom: 15px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    position: relative;
+    padding-left: 60px;
+}
+
+.education-content .steps-list li::before {
+    content: counter(step-counter);
+    position: absolute;
+    left: 15px;
+    top: 15px;
+    background: #3498db;
+    color: white;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
