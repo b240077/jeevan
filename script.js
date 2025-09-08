@@ -1,6 +1,7 @@
 // Global Variables
 let currentUser = null;
 let currentSection = 'dashboard';
+let isMobileMenuOpen = false;
 
 // Water-borne diseases database
 const waterBorneDiseases = {
@@ -1946,6 +1947,117 @@ function showNotification(message, type = 'info') {
     }, 5000);
 }
 
+// Mobile Navigation Functions
+function toggleMobileMenu() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.querySelector('.mobile-overlay');
+    const menuToggle = document.querySelector('.mobile-menu-toggle');
+    
+    isMobileMenuOpen = !isMobileMenuOpen;
+    
+    if (isMobileMenuOpen) {
+        sidebar.classList.add('mobile-open');
+        overlay.classList.add('active');
+        menuToggle.innerHTML = '<i class="fas fa-times"></i>';
+        document.body.style.overflow = 'hidden'; // Prevent background scrolling
+    } else {
+        sidebar.classList.remove('mobile-open');
+        overlay.classList.remove('active');
+        menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
+        document.body.style.overflow = '';
+    }
+}
+
+function closeMobileMenu() {
+    if (isMobileMenuOpen) {
+        toggleMobileMenu();
+    }
+}
+
+// Close mobile menu when clicking on navigation items
+function showSection(sectionId) {
+    // Hide all sections
+    const sections = document.querySelectorAll('.content-section');
+    sections.forEach(section => {
+        section.classList.remove('active');
+    });
+    
+    // Show selected section
+    const targetSection = document.getElementById(sectionId);
+    if (targetSection) {
+        targetSection.classList.add('active');
+    }
+    
+    // Update navigation
+    const navItems = document.querySelectorAll('.nav-item');
+    navItems.forEach(item => {
+        item.classList.remove('active');
+    });
+    
+    const activeNavItem = document.querySelector(`[onclick="showSection('${sectionId}')"]`)?.parentElement;
+    if (activeNavItem) {
+        activeNavItem.classList.add('active');
+    }
+    
+    currentSection = sectionId;
+    
+    // Close mobile menu after navigation (on mobile devices)
+    if (window.innerWidth <= 768) {
+        closeMobileMenu();
+    }
+    
+    // Initialize section-specific functionality
+    if (sectionId === 'predictions') {
+        initializePredictions();
+    }
+}
+
+// Handle window resize events
+function handleWindowResize() {
+    if (window.innerWidth > 768) {
+        // Reset mobile menu state on larger screens
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.querySelector('.mobile-overlay');
+        const menuToggle = document.querySelector('.mobile-menu-toggle');
+        
+        sidebar.classList.remove('mobile-open');
+        overlay.classList.remove('active');
+        menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
+        document.body.style.overflow = '';
+        isMobileMenuOpen = false;
+    }
+}
+
+// Add touch event handlers for better mobile interaction
+function addTouchEventHandlers() {
+    // Add touch feedback to buttons
+    const buttons = document.querySelectorAll('button, .card-btn, .submit-btn, .alert-btn, .learn-btn');
+    buttons.forEach(button => {
+        button.addEventListener('touchstart', function() {
+            this.style.transform = 'scale(0.98)';
+        });
+        
+        button.addEventListener('touchend', function() {
+            this.style.transform = '';
+        });
+    });
+    
+    // Improve checkbox interaction on touch devices
+    const checkboxItems = document.querySelectorAll('.checkbox-item');
+    checkboxItems.forEach(item => {
+        item.addEventListener('touchstart', function(e) {
+            // Prevent double-tap zoom
+            e.preventDefault();
+            const checkbox = this.querySelector('input[type="checkbox"]');
+            if (checkbox) {
+                checkbox.checked = !checkbox.checked;
+                // Trigger change event
+                checkbox.dispatchEvent(new Event('change'));
+            }
+        });
+    });
+}
+
 // Initialize app when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
     // Load saved language
@@ -1967,4 +2079,34 @@ document.addEventListener('DOMContentLoaded', function() {
             submitSymptomForm();
         });
     }
+    
+    // Add window resize handler
+    window.addEventListener('resize', handleWindowResize);
+    
+    // Add touch event handlers for mobile devices
+    if ('ontouchstart' in window) {
+        addTouchEventHandlers();
+    }
+    
+    // Prevent zoom on form inputs on iOS
+    const inputs = document.querySelectorAll('input, select, textarea');
+    inputs.forEach(input => {
+        input.addEventListener('focus', function() {
+            if (window.innerWidth <= 768) {
+                const viewport = document.querySelector('meta[name="viewport"]');
+                if (viewport) {
+                    viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
+                }
+            }
+        });
+        
+        input.addEventListener('blur', function() {
+            if (window.innerWidth <= 768) {
+                const viewport = document.querySelector('meta[name="viewport"]');
+                if (viewport) {
+                    viewport.setAttribute('content', 'width=device-width, initial-scale=1.0');
+                }
+            }
+        });
+    });
 });

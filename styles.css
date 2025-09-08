@@ -751,43 +751,552 @@ body {
     background: #2563eb;
 }
 
-/* Responsive Design */
-@media (max-width: 1024px) {
-    .dashboard-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .stats-grid {
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    }
+/* Mobile Menu Toggle */
+.mobile-menu-toggle {
+    display: none;
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 1001;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 18px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    transition: all 0.3s ease;
 }
 
-@media (max-width: 768px) {
-    .sidebar {
-        transform: translateX(-100%);
-        transition: transform 0.3s ease;
+.mobile-menu-toggle:hover {
+    background: #2563eb;
+    transform: scale(1.05);
+}
+
+.mobile-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    backdrop-filter: blur(4px);
+}
+
+/* Responsive Design - Mobile First Approach */
+
+/* Small devices (phones, 576px and down) */
+@media (max-width: 576px) {
+    .mobile-menu-toggle {
+        display: block;
     }
     
-    .sidebar.open {
-        transform: translateX(0);
+    .mobile-overlay.active {
+        display: block;
+    }
+    
+    .sidebar {
+        position: fixed;
+        left: -280px;
+        top: 0;
+        height: 100vh;
+        z-index: 1000;
+        transition: left 0.3s ease;
+        width: 280px;
+        box-shadow: 4px 0 20px rgba(0, 0, 0, 0.3);
+    }
+    
+    .sidebar.mobile-open {
+        left: 0;
     }
     
     .main-content {
         margin-left: 0;
+        padding: 80px 16px 16px;
+    }
+    
+    .language-selector {
+        top: 80px;
+        right: 16px;
     }
     
     .header {
         flex-direction: column;
         gap: 16px;
         align-items: stretch;
+        margin-bottom: 24px;
+        padding-bottom: 16px;
+    }
+    
+    .header h1 {
+        font-size: 24px;
+    }
+    
+    .header p {
+        font-size: 14px;
     }
     
     .header-actions {
-        justify-content: flex-end;
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .time-filter,
+    .export-btn {
+        width: 100%;
+        justify-content: center;
     }
     
     .stats-grid {
         grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    
+    .stat-card {
+        padding: 20px;
+    }
+    
+    .stat-value {
+        font-size: 28px;
+    }
+    
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .chart-header {
+        flex-direction: column;
+        gap: 16px;
+        align-items: stretch;
+    }
+    
+    .chart-controls {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .chart-btn {
+        flex: 1;
+        min-width: 80px;
+    }
+    
+    .chart-placeholder {
+        height: 300px;
+    }
+    
+    .sector-list {
+        padding: 0 16px 16px;
+    }
+    
+    .sector-item {
+        flex-direction: column;
+        gap: 12px;
+        text-align: center;
+        padding: 16px;
+    }
+    
+    .sector-cases {
+        text-align: center;
+    }
+    
+    /* Form Responsive */
+    .form-container {
+        padding: 24px 16px;
+    }
+    
+    .symptom-form .form-group {
+        padding: 16px;
+        margin-bottom: 20px;
+    }
+    
+    .checkbox-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    
+    .checkbox-item {
+        padding: 16px;
+    }
+    
+    .symptom-form select {
+        padding: 16px;
+        font-size: 16px; /* Prevents zoom on iOS */
+    }
+    
+    .submit-btn {
+        width: 100%;
+        padding: 18px;
+        font-size: 16px;
+    }
+    
+    /* Modal Responsive */
+    .modal-content {
+        width: 95%;
+        margin: 10% auto;
+        max-width: none;
+    }
+    
+    .auth-container {
+        padding: 0 20px 20px;
+    }
+    
+    .auth-tabs {
+        margin-bottom: 20px;
+    }
+    
+    .tab-btn {
+        padding: 12px;
+        font-size: 14px;
+    }
+    
+    /* Data Collection Cards */
+    .data-collection-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    
+    .collection-card {
+        padding: 24px 16px;
+    }
+    
+    /* Water Quality */
+    .water-quality-dashboard {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    
+    .quality-stats {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    
+    .quality-card {
+        padding: 16px;
+        flex-direction: column;
+        text-align: center;
+        gap: 12px;
+    }
+    
+    /* Alerts */
+    .alert-item {
+        flex-direction: column;
+        gap: 12px;
+        text-align: center;
+        padding: 16px;
+    }
+    
+    .alert-content {
+        text-align: center;
+    }
+    
+    /* Education Grid */
+    .education-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    
+    .education-card {
+        padding: 24px 16px;
+    }
+    
+    /* Profile */
+    .profile-container {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    /* Predictions */
+    .predictions-dashboard {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .prediction-cards {
+        gap: 16px;
+    }
+    
+    .prediction-card {
+        flex-direction: column;
+        text-align: center;
+        gap: 16px;
+        padding: 20px;
+    }
+    
+    /* Admin Sections */
+    .admin-stats-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    
+    .admin-stat-card {
+        flex-direction: column;
+        text-align: center;
+        gap: 12px;
+        padding: 20px;
+    }
+    
+    .action-buttons {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+}
+
+/* Medium devices (tablets, 577px to 768px) */
+@media (min-width: 577px) and (max-width: 768px) {
+    .mobile-menu-toggle {
+        display: block;
+    }
+    
+    .mobile-overlay.active {
+        display: block;
+    }
+    
+    .sidebar {
+        position: fixed;
+        left: -280px;
+        top: 0;
+        height: 100vh;
+        z-index: 1000;
+        transition: left 0.3s ease;
+        width: 280px;
+        box-shadow: 4px 0 20px rgba(0, 0, 0, 0.3);
+    }
+    
+    .sidebar.mobile-open {
+        left: 0;
+    }
+    
+    .main-content {
+        margin-left: 0;
+        padding: 80px 24px 24px;
+    }
+    
+    .language-selector {
+        top: 80px;
+        right: 24px;
+    }
+    
+    .header {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 16px;
+        align-items: flex-start;
+    }
+    
+    .header-actions {
+        flex-direction: row;
+        gap: 12px;
+    }
+    
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+    
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+    
+    .chart-controls {
+        justify-content: center;
+    }
+    
+    .checkbox-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+    }
+    
+    .data-collection-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+    
+    .water-quality-dashboard {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .quality-stats {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+    }
+    
+    .education-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+    
+    .profile-container {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+    
+    .predictions-dashboard {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+    
+    .admin-stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+    }
+    
+    .action-buttons {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+    }
+}
+
+/* Large tablets and small desktops (769px to 1024px) */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .main-content {
+        padding: 20px;
+    }
+    
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+    
+    .dashboard-grid {
+        grid-template-columns: 2fr 1fr;
+        gap: 20px;
+    }
+    
+    .checkbox-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+    }
+    
+    .data-collection-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+    
+    .quality-stats {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+    }
+    
+    .education-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+    
+    .predictions-dashboard {
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+    }
+    
+    .admin-stats-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+    }
+}
+
+/* Extra large devices (1025px and up) */
+@media (min-width: 1025px) {
+    .stats-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+    
+    .dashboard-grid {
+        grid-template-columns: 2fr 1fr;
+    }
+    
+    .checkbox-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .data-collection-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .quality-stats {
+        grid-template-columns: repeat(4, 1fr);
+    }
+    
+    .education-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .predictions-dashboard {
+        grid-template-columns: 1fr 1fr;
+    }
+    
+    .admin-stats-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+/* Touch-friendly enhancements */
+@media (hover: none) and (pointer: coarse) {
+    .nav-item a {
+        padding: 16px 20px;
+    }
+    
+    .checkbox-item {
+        padding: 20px;
+        min-height: 60px;
+    }
+    
+    .submit-btn {
+        min-height: 48px;
+        padding: 16px 24px;
+    }
+    
+    .card-btn,
+    .alert-btn,
+    .learn-btn {
+        min-height: 44px;
+        padding: 12px 20px;
+    }
+    
+    .chart-btn {
+        min-height: 40px;
+        padding: 10px 16px;
+    }
+    
+    .action-btn {
+        min-height: 48px;
+        padding: 14px 20px;
+    }
+}
+
+/* Print styles */
+@media print {
+    .sidebar,
+    .mobile-menu-toggle,
+    .mobile-overlay,
+    .language-selector,
+    .header-actions {
+        display: none !important;
+    }
+    
+    .main-content {
+        margin-left: 0 !important;
+        padding: 0 !important;
+    }
+    
+    .stats-grid,
+    .dashboard-grid {
+        grid-template-columns: 1fr !important;
+        gap: 20px !important;
+    }
+    
+    .chart-placeholder {
+        border: 1px solid #ccc;
+        background: white !important;
     }
 }
 
