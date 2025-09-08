@@ -2071,6 +2071,23 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize dashboard
     showSection('dashboard');
     
+    // Initialize health chart
+    updateHealthTrends();
+    
+    // Set up chart control buttons
+    const chartButtons = document.querySelectorAll('.chart-btn');
+    chartButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            // Remove active class from all buttons
+            chartButtons.forEach(btn => btn.classList.remove('active'));
+            // Add active class to clicked button
+            this.classList.add('active');
+            // Update chart view
+            const viewType = this.textContent.toLowerCase();
+            updateChartView(viewType);
+        });
+    });
+    
     // Set up form submission
     const symptomForm = document.getElementById('symptomForm');
     if (symptomForm) {
