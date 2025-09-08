@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jeevan Raksha - Community Health Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Language Selector -->
+    <div class="language-selector">
+        <select id="languageSelect" onchange="changeLanguage(this.value)">
+            <option value="en">English</option>
+            <option value="hi">हिंदी</option>
+            <option value="as">অসমীয়া</option>
+            <option value="bn">বাংলা</option>
+        </select>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div class="auth-container">
+                <div class="auth-tabs">
+                    <button class="tab-btn active" onclick="showLogin()">Login</button>
+                    <button class="tab-btn" onclick="showSignup()">Sign Up</button>
+                </div>
+                
+                <div id="loginForm" class="auth-form">
+                    <h2>Login to Jeevan Raksha</h2>
+                    <div class="user-type-selector">
+                        <label class="user-type-option">
+                            <input type="radio" name="loginUserType" value="user" checked>
+                            <span>General User</span>
+                        </label>
+                        <label class="user-type-option">
+                            <input type="radio" name="loginUserType" value="admin">
+                            <span>Admin</span>
+                        </label>
+                    </div>
+                    <form onsubmit="handleLogin(event)">
+                        <input type="email" placeholder="Email" required>
+                        <input type="password" placeholder="Password" required>
+                        <button type="submit">Login</button>
+                    </form>
+                </div>
+                
+                <div id="signupForm" class="auth-form hidden">
+                    <h2>Create Account</h2>
+                    <div class="user-type-selector">
+                        <label class="user-type-option">
+                            <input type="radio" name="signupUserType" value="user" checked>
+                            <span>General User</span>
+                        </label>
+                        <label class="user-type-option">
+                            <input type="radio" name="signupUserType" value="admin">
+                            <span>Admin</span>
+                        </label>
+                    </div>
+                    <form onsubmit="handleSignup(event)">
+                        <input type="text" placeholder="Full Name" required>
+                        <input type="email" placeholder="Email" required>
+                        <input type="tel" placeholder="Phone Number" required>
+                        <input type="password" placeholder="Password" required>
+                        <input type="password" placeholder="Confirm Password" required>
+                        <div id="adminFields" class="admin-fields hidden">
+                            <input type="text" placeholder="Admin Code" required>
+                            <input type="text" placeholder="Department/Organization" required>
+                        </div>
+                        <button type="submit">Sign Up</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="app-container">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-heartbeat"></i>
+                    </div>
+                    <span>Jeevan Raksha</span>
+                </div>
+                <p class="subtitle">Digital Health Platform</p>
+            </div>
+            
+            <ul class="nav-menu">
+                <li class="nav-item active">
+                    <a href="#dashboard" onclick="showSection('dashboard')">
+                        <i class="fas fa-chart-line"></i>
+                        <span data-translate="dashboard">Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#symptom-form" onclick="showSection('symptom-form')">
+                        <i class="fas fa-clipboard-list"></i>
+                        <span data-translate="symptom_form">Symptom Form</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#data-collection" onclick="showSection('data-collection')">
+                        <i class="fas fa-database"></i>
+                        <span data-translate="data_collection">Data Collection</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#water-quality" onclick="showSection('water-quality')">
+                        <i class="fas fa-tint"></i>
+                        <span data-translate="water_quality">Water Quality</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#alerts" onclick="showSection('alerts')">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span data-translate="alerts">Alerts</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#education" onclick="showSection('education')">
+                        <i class="fas fa-graduation-cap"></i>
+                        <span data-translate="education">Education</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#predictions" onclick="showSection('predictions')">
+                        <i class="fas fa-brain"></i>
+                        <span data-translate="ai_predictions">AI Predictions</span>
+                    </a>
+                </li>
+                <li class="nav-item protected" onclick="requireLogin('profile')">
+                    <a href="#profile">
+                        <i class="fas fa-user"></i>
+                        <span data-translate="profile">My Profile</span>
+                    </a>
+                </li>
+                <li class="nav-item protected" onclick="requireLogin('reports')">
+                    <a href="#reports">
+                        <i class="fas fa-file-medical"></i>
+                        <span data-translate="reports">My Reports</span>
+                    </a>
+                </li>
+                <li class="nav-item admin-only hidden" onclick="requireAdmin('admin-dashboard')">
+                    <a href="#admin-dashboard">
+                        <i class="fas fa-cogs"></i>
+                        <span data-translate="admin_dashboard">Admin Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item admin-only hidden" onclick="requireAdmin('content-management')">
+                    <a href="#content-management">
+                        <i class="fas fa-edit"></i>
+                        <span data-translate="content_management">Content Management</span>
+                    </a>
+                </li>
+            </ul>
+            
+            <div class="user-section">
+                <div id="userInfo" class="user-info hidden">
+                    <div class="user-avatar">
+                        <i class="fas fa-user-circle"></i>
+                    </div>
+                    <div class="user-details">
+                        <span id="userName">User Name</span>
+                        <button onclick="logout()" class="logout-btn">Logout</button>
+                    </div>
+                </div>
+                <button id="loginBtn" class="login-btn" onclick="openLoginModal()">
+                    <i class="fas fa-sign-in-alt"></i>
+                    <span data-translate="login">Login</span>
+                </button>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="header">
+                <h1 data-translate="community_health_dashboard">Community Health Dashboard</h1>
+                <p data-translate="real_time_monitoring">Real-time health monitoring and outbreak prediction</p>
+                <div class="header-actions">
+                    <select class="time-filter">
+                        <option data-translate="last_7_days">Last 7 days</option>
+                        <option data-translate="last_30_days">Last 30 days</option>
+                        <option data-translate="last_90_days">Last 90 days</option>
+                    </select>
+                    <button class="export-btn">
+                        <i class="fas fa-download"></i>
+                        <span data-translate="export_data">Export Data</span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Dashboard Section -->
+            <section id="dashboard" class="content-section active">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <h3 data-translate="total_reports">Total Reports</h3>
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <div class="stat-value">2</div>
+                        <div class="stat-change positive">+12% from last week</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <h3 data-translate="active_alerts">Active Alerts</h3>
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="stat-value">1</div>
+                        <div class="stat-change negative">-8% from last week</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <h3 data-translate="water_quality">Water Quality</h3>
+                            <i class="fas fa-tint"></i>
+                        </div>
+                        <div class="stat-value">100/100</div>
+                        <div class="stat-change neutral">No change</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <h3 data-translate="risk_score">Risk Score</h3>
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <div class="stat-value">Low</div>
+                        <div class="stat-change">AI Prediction</div>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <h3 data-translate="health_trends">Health Trends</h3>
+                            <div class="chart-controls">
+                                <button class="chart-btn active">Symptoms</button>
+                                <button class="chart-btn">Cases</button>
+                                <button class="chart-btn">Recoveries</button>
+                            </div>
+                        </div>
+                        <div class="chart-placeholder">
+                            <canvas id="healthChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="geographic-distribution">
+                        <div class="geo-header">
+                            <h3 data-translate="geographic_distribution">Geographic Distribution</h3>
+                        </div>
+                        <div class="sector-list">
+                            <div class="sector-item">
+                                <div class="sector-info">
+                                    <div class="sector-dot high-risk"></div>
+                                    <div>
+                                        <div class="sector-name">Guwahati</div>
+                                        <div class="sector-population">Population: 2,450</div>
+                                    </div>
+                                </div>
+                                <div class="sector-cases">
+                                    <span class="case-count">23 cases</span>
+                                    <span class="risk-badge high-risk">High Risk</span>
+                                </div>
+                            </div>
+                            
+                            <div class="sector-item">
+                                <div class="sector-info">
+                                    <div class="sector-dot medium-risk"></div>
+                                    <div>
+                                        <div class="sector-name">Imphal</div>
+                                        <div class="sector-population">Population: 3,200</div>
+                                    </div>
+                                </div>
+                                <div class="sector-cases">
+                                    <span class="case-count">15 cases</span>
+                                    <span class="risk-badge medium-risk">Medium Risk</span>
+                                </div>
+                            </div>
+                            
+                            <div class="sector-item">
+                                <div class="sector-info">
+                                    <div class="sector-dot low-risk"></div>
+                                    <div>
+                                        <div class="sector-name">Shillong</div>
+                                        <div class="sector-population">Population: 1,890</div>
+                                    </div>
+                                </div>
+                                <div class="sector-cases">
+                                    <span class="case-count">8 cases</span>
+                                    <span class="risk-badge low-risk">Low Risk</span>
+                                </div>
+                            </div>
+                            
+                            <div class="sector-item">
+                                <div class="sector-info">
+                                    <div class="sector-dot low-risk"></div>
+                                    <div>
+                                        <div class="sector-name">Aizawl</div>
+                                        <div class="sector-population">Population: 1,650</div>
+                                    </div>
+                                </div>
+                                <div class="sector-cases">
+                                    <span class="case-count">5 cases</span>
+                                    <span class="risk-badge low-risk">Low Risk</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Symptom Form Section -->
+            <section id="symptom-form" class="content-section">
+                <div class="section-header">
+                    <h2 data-translate="report_symptoms">Report Symptoms</h2>
+                    <p data-translate="symptom_form_desc">Report your symptoms to help monitor community health</p>
+                </div>
+                <div class="form-container">
+                    <form id="symptomForm" class="symptom-form form-container">
+                        <div class="form-group">
+                            <label data-translate="select_symptoms">Select your symptoms:</label>
+                            <div class="checkbox-grid">
+                                <label class="checkbox-item">
+                                    <input type="checkbox" value="fever">
+                                    <span data-translate="fever">Fever</span>
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" value="diarrhea">
+                                    <span data-translate="diarrhea">Diarrhea</span>
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" value="vomiting">
+                                    <span data-translate="vomiting">Vomiting</span>
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" value="nausea">
+                                    <span data-translate="nausea">Nausea</span>
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" value="abdominal_pain">
+                                    <span data-translate="abdominal_pain">Abdominal Pain</span>
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" value="headache">
+                                    <span data-translate="headache">Headache</span>
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" value="fatigue">
+                                    <span data-translate="fatigue">Fatigue</span>
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" value="dehydration">
+                                    <span data-translate="dehydration">Dehydration</span>
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" value="muscle_cramps">
+                                    <span data-translate="muscle_cramps">Muscle Cramps</span>
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" value="jaundice">
+                                    <span data-translate="jaundice">Jaundice</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label data-translate="symptom_duration">Since how many days are you feeling these symptoms?</label>
+                            <select name="duration" required>
+                                <option value="">Select duration</option>
+                                <option value="1_day">1 day</option>
+                                <option value="2_days">2 days</option>
+                                <option value="3_days">3 days</option>
+                                <option value="4_days">4 days</option>
+                                <option value="5_days">5 days</option>
+                                <option value="6_days">6 days</option>
+                                <option value="1_week">1 week</option>
+                                <option value="2_weeks">2 weeks</option>
+                                <option value="3_weeks">3 weeks</option>
+                                <option value="1_month">1 month</option>
+                                <option value="more_than_month">More than a month</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label data-translate="water_source">What is your primary source of drinking water?</label>
+                            <select name="water_source" required>
+                                <option value="">Select water source</option>
+                                <option value="municipal_tap">Municipal Tap Water</option>
+                                <option value="private_well">Private Well Water</option>
+                                <option value="community_well">Community Well Water</option>
+                                <option value="borehole">Borehole/Tubewell</option>
+                                <option value="river_stream">River/Stream Water</option>
+                                <option value="pond_lake">Pond/Lake Water</option>
+                                <option value="rainwater">Rainwater Collection</option>
+                                <option value="bottled_water">Bottled Water</option>
+                                <option value="water_tanker">Water Tanker Supply</option>
+                                <option value="spring_water">Natural Spring</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label data-translate="water_treatment">Do you treat your water before drinking?</label>
+                            <select name="water_treatment" required>
+                                <option value="">Select treatment method</option>
+                                <option value="none">No treatment</option>
+                                <option value="boiling">Boiling</option>
+                                <option value="filtration">Water Filter</option>
+                                <option value="chlorination">Chlorine tablets/drops</option>
+                                <option value="uv_treatment">UV purification</option>
+                                <option value="ro_system">RO (Reverse Osmosis)</option>
+                                <option value="multiple">Multiple methods</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label data-translate="severity_level">How would you rate the severity of your symptoms?</label>
+                            <select name="severity" required>
+                                <option value="">Select severity</option>
+                                <option value="mild">Mild - Manageable discomfort</option>
+                                <option value="moderate">Moderate - Noticeable impact on daily activities</option>
+                                <option value="severe">Severe - Significant difficulty with daily activities</option>
+                                <option value="very_severe">Very Severe - Unable to perform normal activities</option>
+                            </select>
+                        </div>
+                        
+                        <button type="submit" class="submit-btn">
+                            <i class="fas fa-paper-plane"></i>
+                            <span data-translate="submit_report">Submit Report</span>
+                        </button>
+                    </form>
+                    
+                    <!-- Analysis Results Container -->
+                    <div id="analysisResults" class="analysis-results-container">
+                        <!-- Disease analysis results will be displayed here -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Data Collection Section -->
+            <section id="data-collection" class="content-section">
+                <div class="section-header">
+                    <h2 data-translate="data_collection">Data Collection</h2>
+                    <p data-translate="data_collection_desc">Report health data from your community</p>
+                </div>
+                <div class="data-collection-grid">
+                    <div class="collection-card">
+                        <div class="card-icon">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <h3 data-translate="mobile_reporting">Mobile Reporting</h3>
+                        <p data-translate="mobile_reporting_desc">Report health incidents via mobile app or SMS</p>
+                        <button class="card-btn" data-translate="start_reporting">Start Reporting</button>
+                    </div>
+                    
+                    <div class="collection-card">
+                        <div class="card-icon">
+                            <i class="fas fa-user-md"></i>
+                        </div>
+                        <h3 data-translate="asha_workers">ASHA Workers</h3>
+                        <p data-translate="asha_workers_desc">Data collection from community health workers</p>
+                        <button class="card-btn" data-translate="view_reports">View Reports</button>
+                    </div>
+                    
+                    <div class="collection-card">
+                        <div class="card-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h3 data-translate="community_volunteers">Community Volunteers</h3>
+                        <p data-translate="community_volunteers_desc">Volunteer-based health monitoring</p>
+                        <button class="card-btn" data-translate="join_program">Join Program</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Water Quality Section -->
+            <section id="water-quality" class="content-section">
+                <div class="section-header">
+                    <h2 data-translate="water_quality">Water Quality Monitoring</h2>
+                    <p data-translate="water_quality_desc">Monitor water quality in your area</p>
+                </div>
+                <div class="water-quality-dashboard">
+                    <div class="quality-stats">
+                        <div class="quality-card excellent">
+                            <div class="quality-indicator"></div>
+                            <div class="quality-info">
+                                <h3 data-translate="ph_level">pH Level</h3>
+                                <div class="quality-value">7.2</div>
+                                <div class="quality-status" data-translate="excellent">Excellent</div>
+                            </div>
+                        </div>
+                        
+                        <div class="quality-card good">
+                            <div class="quality-indicator"></div>
+                            <div class="quality-info">
+                                <h3 data-translate="turbidity">Turbidity</h3>
+                                <div class="quality-value">2.1 NTU</div>
+                                <div class="quality-status" data-translate="good">Good</div>
+                            </div>
+                        </div>
+                        
+                        <div class="quality-card warning">
+                            <div class="quality-indicator"></div>
+                            <div class="quality-info">
+                                <h3 data-translate="chlorine">Chlorine</h3>
+                                <div class="quality-value">0.8 mg/L</div>
+                                <div class="quality-status" data-translate="moderate">Moderate</div>
+                            </div>
+                        </div>
+                        
+                        <div class="quality-card excellent">
+                            <div class="quality-indicator"></div>
+                            <div class="quality-info">
+                                <h3 data-translate="bacteria">Bacteria</h3>
+                                <div class="quality-value">0 CFU</div>
+                                <div class="quality-status" data-translate="safe">Safe</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="water-sources">
+                        <h3 data-translate="water_sources">Water Sources</h3>
+                        <div class="source-list">
+                            <div class="source-item">
+                                <div class="source-info">
+                                    <i class="fas fa-tint"></i>
+                                    <div>
+                                        <div class="source-name">Main Water Supply</div>
+                                        <div class="source-location">Sector 1, Block A</div>
+                                    </div>
+                                </div>
+                                <div class="source-status safe">Safe</div>
+                            </div>
+                            
+                            <div class="source-item">
+                                <div class="source-info">
+                                    <i class="fas fa-water"></i>
+                                    <div>
+                                        <div class="source-name">Community Well</div>
+                                        <div class="source-location">Sector 2, Block B</div>
+                                    </div>
+                                </div>
+                                <div class="source-status warning">Needs Testing</div>
+                            </div>
+                            
+                            <div class="source-item">
+                                <div class="source-info">
+                                    <i class="fas fa-river"></i>
+                                    <div>
+                                        <div class="source-name">River Source</div>
+                                        <div class="source-location">Sector 3, Riverside</div>
+                                    </div>
+                                </div>
+                                <div class="source-status danger">Contaminated</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Alerts Section -->
+            <section id="alerts" class="content-section">
+                <div class="section-header">
+                    <h2 data-translate="alerts">Health Alerts</h2>
+                    <p data-translate="alerts_desc">Real-time health alerts and warnings</p>
+                </div>
+                <div class="alerts-container">
+                    <div class="alert-item high-priority">
+                        <div class="alert-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="alert-content">
+                            <div class="alert-title">High Risk Area Detected</div>
+                            <div class="alert-description">Increased cases of diarrhea reported in Sector 3. Avoid drinking untreated water.</div>
+                            <div class="alert-time">2 hours ago</div>
+                        </div>
+                        <div class="alert-actions">
+                            <button class="alert-btn">View Details</button>
+                        </div>
+                    </div>
+                    
+                    <div class="alert-item medium-priority">
+                        <div class="alert-icon">
+                            <i class="fas fa-info-circle"></i>
+                        </div>
+                        <div class="alert-content">
+                            <div class="alert-title">Water Quality Advisory</div>
+                            <div class="alert-description">Boil water before consumption in Sector 2 due to maintenance work.</div>
+                            <div class="alert-time">6 hours ago</div>
+                        </div>
+                        <div class="alert-actions">
+                            <button class="alert-btn">Acknowledge</button>
+                        </div>
+                    </div>
+                    
+                    <div class="alert-item low-priority">
+                        <div class="alert-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="alert-content">
+                            <div class="alert-title">Vaccination Drive</div>
+                            <div class="alert-description">Free hepatitis A vaccination available at community center.</div>
+                            <div class="alert-time">1 day ago</div>
+                        </div>
+                        <div class="alert-actions">
+                            <button class="alert-btn">Register</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Education Section -->
+            <section id="education" class="content-section">
+                <div class="section-header">
+                    <h2 data-translate="education">Health Education</h2>
+                    <p data-translate="education_desc">Learn about water-borne diseases and prevention</p>
+                </div>
+                <div class="education-grid">
+                    <div class="education-card">
+                        <div class="card-image">
+                            <i class="fas fa-hands-wash"></i>
+                        </div>
+                        <h3 data-translate="hygiene_practices">Hygiene Practices</h3>
+                        <p data-translate="hygiene_desc">Learn proper handwashing and personal hygiene</p>
+                        <button class="learn-btn" data-translate="learn_more">Learn More</button>
+                    </div>
+                    
+                    <div class="education-card">
+                        <div class="card-image">
+                            <i class="fas fa-filter"></i>
+                        </div>
+                        <h3 data-translate="water_purification">Water Purification</h3>
+                        <p data-translate="water_purification_desc">Methods to purify water at home</p>
+                        <button class="learn-btn" data-translate="learn_more">Learn More</button>
+                    </div>
+                    
+                    <div class="education-card">
+                        <div class="card-image">
+                            <i class="fas fa-virus"></i>
+                        </div>
+                        <h3 data-translate="disease_prevention">Disease Prevention</h3>
+                        <p data-translate="disease_prevention_desc">Prevent water-borne diseases</p>
+                        <button class="learn-btn" data-translate="learn_more">Learn More</button>
+                    </div>
+                    
+                    <div class="education-card">
+                        <div class="card-image">
+                            <i class="fas fa-first-aid"></i>
+                        </div>
+                        <h3 data-translate="first_aid">First Aid</h3>
+                        <p data-translate="first_aid_desc">Emergency response for health issues</p>
+                        <button class="learn-btn" data-translate="learn_more">Learn More</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Profile Section -->
+            <section id="profile" class="content-section">
+                <div class="section-header">
+                    <h2 data-translate="my_profile">My Profile</h2>
+                    <p data-translate="profile_desc">Manage your personal information</p>
+                </div>
+                <div class="profile-container">
+                    <div class="profile-card">
+                        <div class="profile-avatar">
+                            <i class="fas fa-user-circle"></i>
+                        </div>
+                        <div class="profile-info">
+                            <h3 id="profileName">User Name</h3>
+                            <p id="profileEmail">user@example.com</p>
+                        </div>
+                        <button class="edit-profile-btn" data-translate="edit_profile">Edit Profile</button>
+                    </div>
+                    
+                    <div class="profile-stats">
+                        <div class="stat-item">
+                            <div class="stat-number">5</div>
+                            <div class="stat-label" data-translate="total_assessments">Total Assessments</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">2</div>
+                            <div class="stat-label" data-translate="health_reports">Health Reports</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">12</div>
+                            <div class="stat-label" data-translate="days_active">Days Active</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Reports Section -->
+            <section id="reports" class="content-section">
+                <div class="section-header">
+                    <h2 data-translate="my_reports">My Health Reports</h2>
+                    <p data-translate="reports_desc">View your health assessment history</p>
+                </div>
+                <div class="reports-container">
+                    <div class="report-item">
+                        <div class="report-date">
+                            <div class="date-day">15</div>
+                            <div class="date-month">Dec</div>
+                        </div>
+                        <div class="report-content">
+                            <h3>Symptom Assessment</h3>
+                            <p>Symptoms: Fever, Headache, Nausea</p>
+                            <p class="report-result">Result: Possible viral infection - Monitor symptoms</p>
+                        </div>
+                        <div class="report-status low-risk">Low Risk</div>
+                    </div>
+                    
+                    <div class="report-item">
+                        <div class="report-date">
+                            <div class="date-day">12</div>
+                            <div class="date-month">Dec</div>
+                        </div>
+                        <div class="report-content">
+                            <h3>Water Quality Check</h3>
+                            <p>Location: Home water supply</p>
+                            <p class="report-result">Result: Water quality is safe for consumption</p>
+                        </div>
+                        <div class="report-status safe">Safe</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- AI Predictions Section -->
+            <section id="predictions" class="content-section">
+                <div class="section-header">
+                    <h2 data-translate="ai_predictions">AI Predictions</h2>
+                    <p data-translate="predictions_desc">AI-powered outbreak predictions using Keras deep learning model</p>
+                    <div class="model-info">
+                        <span id="modelStatus" class="model-status">Loading AI model...</span>
+                        <button onclick="refreshPredictions()" class="refresh-btn">
+                            <i class="fas fa-sync-alt"></i>
+                            Refresh Predictions
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="predictions-dashboard">
+                    <!-- Main Risk Assessment Cards -->
+                    <div class="prediction-cards">
+                        <div class="prediction-card main-risk">
+                            <div class="prediction-icon">
+                                <i class="fas fa-brain"></i>
+                            </div>
+                            <div class="prediction-content">
+                                <h3 data-translate="outbreak_risk">AI Outbreak Risk</h3>
+                                <div id="overallRiskLevel" class="risk-level low">Loading...</div>
+                                <div id="riskScore" class="risk-score">--</div>
+                                <div id="confidenceLevel" class="confidence">Confidence: --%</div>
+                                <div id="riskFactors" class="risk-factors">
+                                    <small>Analyzing environmental and health data...</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="prediction-card seasonal">
+                            <div class="prediction-icon">
+                                <i class="fas fa-calendar-alt"></i>
+                            </div>
+                            <div class="prediction-content">
+                                <h3 data-translate="seasonal_forecast">Seasonal Forecast</h3>
+                                <div id="forecastPeriod" class="forecast-period">Next 6 months</div>
+                                <div id="seasonalTrend" class="seasonal-trend">Loading trend...</div>
+                                <div id="peakRiskPeriod" class="peak-risk">Peak risk: Calculating...</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Disease-Specific Predictions -->
+                    <div class="disease-predictions">
+                        <h3>Disease-Specific Risk Assessment</h3>
+                        <div class="disease-grid">
+                            <div class="disease-card" id="choleraCard">
+                                <div class="disease-header">
+                                    <h4>Cholera</h4>
+                                    <div class="disease-risk low">Low</div>
+                                </div>
+                                <div class="disease-details">
+                                    <div class="risk-score">Risk: <span>--%</span></div>
+                                    <div class="seasonal-indicator">
+                                        <i class="fas fa-circle"></i>
+                                        <span>Seasonal risk</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="disease-card" id="typhoidCard">
+                                <div class="disease-header">
+                                    <h4>Typhoid</h4>
+                                    <div class="disease-risk low">Low</div>
+                                </div>
+                                <div class="disease-details">
+                                    <div class="risk-score">Risk: <span>--%</span></div>
+                                    <div class="seasonal-indicator">
+                                        <i class="fas fa-circle"></i>
+                                        <span>Seasonal risk</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="disease-card" id="hepatitisCard">
+                                <div class="disease-header">
+                                    <h4>Hepatitis A</h4>
+                                    <div class="disease-risk low">Low</div>
+                                </div>
+                                <div class="disease-details">
+                                    <div class="risk-score">Risk: <span>--%</span></div>
+                                    <div class="seasonal-indicator">
+                                        <i class="fas fa-circle"></i>
+                                        <span>Seasonal risk</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="disease-card" id="diarrheaCard">
+                                <div class="disease-header">
+                                    <h4>Diarrheal Diseases</h4>
+                                    <div class="disease-risk medium">Medium</div>
+                                </div>
+                                <div class="disease-details">
+                                    <div class="risk-score">Risk: <span>--%</span></div>
+                                    <div class="seasonal-indicator">
+                                        <i class="fas fa-circle"></i>
+                                        <span>Seasonal risk</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Risk Trends Chart -->
+                    <div class="prediction-chart">
+                        <div class="chart-header">
+                            <h3 data-translate="risk_trends">6-Month Risk Trends</h3>
+                            <div class="chart-legend">
+                                <div class="legend-item">
+                                    <div class="legend-color high"></div>
+                                    <span>High Risk (>70)</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-color medium"></div>
+                                    <span>Medium Risk (40-70)</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-color low"></div>
+                                    <span>Low Risk (<40)</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="chart-placeholder">
+                            <canvas id="predictionChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- AI Recommendations -->
+                    <div class="ai-recommendations">
+                        <h3>AI-Generated Recommendations</h3>
+                        <div id="recommendationsList" class="recommendations-list">
+                            <div class="loading-recommendations">
+                                <i class="fas fa-spinner fa-spin"></i>
+                                Generating AI recommendations...
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Model Information -->
+                    <div class="model-information">
+                        <h4>Model Information</h4>
+                        <div class="model-details">
+                            <div class="model-detail">
+                                <span class="label">Model Type:</span>
+                                <span id="modelType">Keras Deep Learning</span>
+                            </div>
+                            <div class="model-detail">
+                                <span class="label">Last Updated:</span>
+                                <span id="lastUpdated">--</span>
+                            </div>
+                            <div class="model-detail">
+                                <span class="label">Data Sources:</span>
+                                <span>Health reports, Water quality, Environmental data</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Admin Dashboard Section -->
+            <section id="admin-dashboard" class="content-section admin-section">
+                <div class="section-header">
+                    <h2 data-translate="admin_dashboard">Admin Dashboard</h2>
+                    <p data-translate="admin_dashboard_desc">Manage system settings and monitor platform activity</p>
+                </div>
+                <div class="admin-stats-grid">
+                    <div class="admin-stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Total Users</h3>
+                            <div class="stat-number" id="totalUsers">1,247</div>
+                            <div class="stat-change">+12% this month</div>
+                        </div>
+                    </div>
+                    
+                    <div class="admin-stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-file-medical-alt"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Health Reports</h3>
+                            <div class="stat-number" id="totalReports">3,891</div>
+                            <div class="stat-change">+8% this week</div>
+                        </div>
+                    </div>
+                    
+                    <div class="admin-stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Active Alerts</h3>
+                            <div class="stat-number" id="activeAlerts">7</div>
+                            <div class="stat-change">-2 from yesterday</div>
+                        </div>
+                    </div>
+                    
+                    <div class="admin-stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-tint"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Water Quality Tests</h3>
+                            <div class="stat-number" id="waterTests">156</div>
+                            <div class="stat-change">+5 today</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="admin-actions">
+                    <div class="action-card">
+                        <h3>Quick Actions</h3>
+                        <div class="action-buttons">
+                            <button class="action-btn" onclick="showSection('content-management')">
+                                <i class="fas fa-edit"></i>
+                                Manage Content
+                            </button>
+                            <button class="action-btn" onclick="uploadWaterQuality()">
+                                <i class="fas fa-upload"></i>
+                                Upload Water Data
+                            </button>
+                            <button class="action-btn" onclick="createAlert()">
+                                <i class="fas fa-bell"></i>
+                                Create Alert
+                            </button>
+                            <button class="action-btn" onclick="exportData()">
+                                <i class="fas fa-download"></i>
+                                Export Reports
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Content Management Section -->
+            <section id="content-management" class="content-section admin-section">
+                <div class="section-header">
+                    <h2 data-translate="content_management">Content Management</h2>
+                    <p data-translate="content_management_desc">Edit educational materials and system content</p>
+                </div>
+                
+                <div class="content-tabs">
+                    <button class="content-tab-btn active" onclick="showContentTab('education-content')">Education Materials</button>
+                    <button class="content-tab-btn" onclick="showContentTab('water-quality-upload')">Water Quality Data</button>
+                    <button class="content-tab-btn" onclick="showContentTab('alert-management')">Alert Management</button>
+                </div>
+                
+                <!-- Education Content Management -->
+                <div id="education-content" class="content-tab-panel active">
+                    <div class="content-editor">
+                        <h3>Education Materials</h3>
+                        <div class="education-items">
+                            <div class="education-item-editor">
+                                <div class="item-header">
+                                    <h4>Hygiene Practices</h4>
+                                    <button class="edit-btn" onclick="editEducationItem('hygiene')">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </div>
+                                <div class="item-content">
+                                    <p>Learn proper handwashing and personal hygiene</p>
+                                </div>
+                            </div>
+                            
+                            <div class="education-item-editor">
+                                <div class="item-header">
+                                    <h4>Water Purification</h4>
+                                    <button class="edit-btn" onclick="editEducationItem('purification')">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </div>
+                                <div class="item-content">
+                                    <p>Methods to purify water at home</p>
+                                </div>
+                            </div>
+                            
+                            <div class="add-education-item">
+                                <button class="add-btn" onclick="addEducationItem()">
+                                    <i class="fas fa-plus"></i>
+                                    Add New Material
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Water Quality Upload -->
+                <div id="water-quality-upload" class="content-tab-panel">
+                    <div class="upload-section">
+                        <h3>Upload Water Quality Data</h3>
+                        <form id="waterQualityForm" class="water-quality-form">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Location</label>
+                                    <input type="text" name="location" placeholder="e.g., Sector 1, Block A" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Source Type</label>
+                                    <select name="sourceType" required>
+                                        <option value="">Select Source</option>
+                                        <option value="tap">Tap Water</option>
+                                        <option value="well">Well Water</option>
+                                        <option value="river">River Water</option>
+                                        <option value="borehole">Borehole</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>pH Level</label>
+                                    <input type="number" name="ph" step="0.1" min="0" max="14" placeholder="7.0" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Turbidity (NTU)</label>
+                                    <input type="number" name="turbidity" step="0.1" min="0" placeholder="2.1" required>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Chlorine (mg/L)</label>
+                                    <input type="number" name="chlorine" step="0.1" min="0" placeholder="0.8" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Bacteria Count (CFU)</label>
+                                    <input type="number" name="bacteria" min="0" placeholder="0" required>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Additional Notes</label>
+                                <textarea name="notes" placeholder="Any additional observations or comments"></textarea>
+                            </div>
+                            
+                            <button type="submit" class="submit-btn">
+                                <i class="fas fa-upload"></i>
+                                Upload Water Quality Data
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- Alert Management -->
+                <div id="alert-management" class="content-tab-panel">
+                    <div class="alert-creator">
+                        <h3>Create Health Alert</h3>
+                        <form id="alertForm" class="alert-form">
+                            <div class="form-group">
+                                <label>Alert Type</label>
+                                <select name="alertType" required>
+                                    <option value="">Select Type</option>
+                                    <option value="outbreak">Disease Outbreak</option>
+                                    <option value="water_quality">Water Quality Issue</option>
+                                    <option value="vaccination">Vaccination Drive</option>
+                                    <option value="general">General Health Advisory</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Priority Level</label>
+                                <select name="priority" required>
+                                    <option value="">Select Priority</option>
+                                    <option value="high">High Priority</option>
+                                    <option value="medium">Medium Priority</option>
+                                    <option value="low">Low Priority</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Alert Title</label>
+                                <input type="text" name="title" placeholder="Enter alert title" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Alert Message</label>
+                                <textarea name="message" placeholder="Enter detailed alert message" required></textarea>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Affected Location</label>
+                                <input type="text" name="location" placeholder="e.g., Sector 3, All areas" required>
+                            </div>
+                            
+                            <button type="submit" class="submit-btn">
+                                <i class="fas fa-bell"></i>
+                                Create Alert
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="script.js"></script>
+</body>
+</html>
